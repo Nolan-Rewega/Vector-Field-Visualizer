@@ -6,7 +6,7 @@
 #include"Math.h"
 using namespace std;
 
-class Grid{
+class Graph{
 public:
     // -- constant definitions.
     const int GRIDROWS = 10;
@@ -23,14 +23,12 @@ public:
     Math solver;
 
 
-    /* Methods*/
-    Grid();
-    void updateGrid();
-    void gridScale(double zoom_x, double zoom_y);
-    void gridShift(double shift_x, double shift_y);
-    void horizontalTransform(double left_bound, double right_bound);
-    void verticalTransform(double top_bound, double bot_bound);
-    void printGrid();
+    /* Methods */
+    Graph();
+    void updateGraph();
+    void scaleGraph(double zoom_x, double zoom_y);
+    void translateGraph(double deltaX, double deltaY);
+    void printGraph();
 
 };
 #endif

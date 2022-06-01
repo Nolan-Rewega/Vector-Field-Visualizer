@@ -1,10 +1,10 @@
-#include"Grid.h"
+#include"Graph.h"
 
 
 /* classic cartesean grid, 4 quadrants */
-Grid::Grid(){
+Graph::Graph(){
     
-    /* inital bounds of the grid*/
+    /* Internal bounds of the grid */
     left_x = -5.0; bot_y = -5.0;
     right_x = 5.0; top_y = 5.0;
     
@@ -12,17 +12,17 @@ Grid::Grid(){
     discretization_x = (right_x - left_x) / GRIDCOLS;    
     discretization_y = (top_y - bot_y) / GRIDROWS;
     
-    results.resize(GRIDROWS*GRIDCOLS, vector<double>(4, 0.0))   
+    vector_data.resize(GRIDROWS * GRIDCOLS, vector<double>(4, 0.0));
     
     // -- get Inital equations
     solver.getInput();
 
     // --  Initilization of the Grid.
-    updateGrid();
+    updateGraph();
 }
  
  
-void Grid::updateGrid(){
+void Graph::updateGraph(){
     double x_value, y_value;
     
     // -- erase the previous data for new data
@@ -47,19 +47,8 @@ void Grid::updateGrid(){
 }
 
 
-void Grid::gridShift(double shift_x, double shift_y){
-    // shift the x-axis
-    right_x = right_x + shift_x;
-    left_x = left_x + shift_x;
-    // shift y-axis
-    top_y = top_y + shift_y;
-    bot_y = bot_y + shift_y;
 
-    updateGrid();
-}
- 
-
-void Grid::gridScale(double zoom_x, double zoom_y){
+void Graph::scaleGraph(double zoom_x, double zoom_y){
     // scale x-axis
     if(zoom_x != 0){
         right_x = right_x * zoom_x;
@@ -72,27 +61,23 @@ void Grid::gridScale(double zoom_x, double zoom_y){
         bot_y = bot_y * zoom_y;
         discretization_y = (top_y - bot_y) / GRIDROWS;
     }
-    updateGrid();
-}
-    
-
-void Grid::verticalTransform(double top_bound, double bot_bound){
-    top_y = top_bound; bot_y = bot_bound;
-    discretization_y = (top_y - bot_y) / GRIDROWS;
-    
-    updateGrid();
+    updateGraph();
 }
 
+void Graph::translateGraph(double deltaX, double deltaY){
+    // -- translate X-axis
+    left_x += deltaX;
+    right_x += deltaX;
 
-void Grid::horizontalTransform(double left_bound, double right_bound){
-    left_x = left_bound; right_x = right_bound;
-    discretization_x = (right_x - left_x) / GRIDCOLS;
-    
-    updateGrid();
+    // -- Translate Y-axis
+    top_y += deltaY;
+    bot_y += deltaY;
+
+    updateGraph();
 }
 
 
-void Grid::printGrid(){
+void Graph::printGraph(){
     for(int row = 0; row < GRIDROWS; row++){
         cout << "[ ";
         for(int col = 0; col < GRIDCOLS; col++){
