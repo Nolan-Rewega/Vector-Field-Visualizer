@@ -1,68 +1,64 @@
 #include"Graph.h"
 
 
-/* classic cartesean grid, 4 quadrants */
-Graph::Graph(){
+/* classic cartesean system, 4 quadrants */
+Graph::Graph(int rows, int cols, int aisles){
     
-    /* Internal bounds of the grid */
-    left_x = -5.0; bot_y = -5.0;
-    right_x = 5.0; top_y = 5.0;
-    
-    /* discretization values */
-    discretization_x = (right_x - left_x) / GRIDCOLS;    
-    discretization_y = (top_y - bot_y) / GRIDROWS;
-    
-    vector_data.resize(GRIDROWS * GRIDCOLS, vector<double>(4, 0.0));
-    
-    // -- get Inital equations
-    solver.getInput();
+    ROWS = rows;
+    COLS = cols;
+    AISLES = aisles;
 
+    /* Internal bounds of the grid */
+     left_x = -5.0;      right_x = 5.0;
+     bot_y  = -5.0;      top_y   = 5.0;
+     back_z = -5.0;      front_z = 5.0;
+
+    /* discretization values */
+    discretization_x = (right_x - left_x) / COLS;    
+    discretization_y = (top_y - bot_y) / ROWS;
+    discretization_z = (front_z - back_z) / AISLES;
+    
     // --  Initilization of the Grid.
+    initFieldData();
     updateGraph();
 }
  
+Graph::~Graph(){
+    free(field_data);
+}
  
-void Graph::updateGraph(){
-    double x_value, y_value;
-    
-    // -- erase the previous data for new data
-    vector_data.erase();
-    
-    /* passes each value (x,y) value to parse to postfix to solve the eq */
-    for(int row = 0; row < GRIDROWS; row++){
-        vector<double> data;
-        for(int col = 0; col < GRIDCOLS; col++){
-            /* Generate x and y values based on bounds and discretization */
-            x_value = (left_x + (row * discretization_x));
-            y_value = (top_y - (col * discretization_y));
-            solver.parseToPostFix(x_value, y_value, 0);
-            
-            data.push_back(x_value);
-            data.push_back(y_value);
-            data.push_back(x_value + solver.results[0]);
-            data.push_back(y_value + solver.results[1]);
+
+void Graph::updateGraph() {
+    //double* result = nullptr;
+    for (int r = 0; r < ROWS - 1; r++) {
+        for (int c = 0; c < COLS - 1; c++) {
+            //result = solver.parseToPostFix((left_x + (c * discretization_x)), (top_y - (r * discretization_y)), 0.0);
+            field_data[((COLS - 1) * r + c) * 3 + 0] = (left_x + ((c+1) * discretization_x));
+            field_data[((COLS - 1) * r + c) * 3 + 1] = ( top_y - ((r+1) * discretization_y));
+            field_data[((COLS - 1) * r + c) * 3 + 2] = 0.0;
         }
-        vector_data.push_back(data);
     }
 }
-
 
 
 void Graph::scaleGraph(double zoom_x, double zoom_y){
-    // scale x-axis
-    if(zoom_x != 0){
-        right_x = right_x * zoom_x;
-        left_x = left_x * zoom_x;
-        discretization_x = (right_x - left_x) / GRIDCOLS;
-    }
-    // scale y-axis
-    if(zoom_y != 0){
-        top_y = top_y * zoom_y;
-        bot_y = bot_y * zoom_y;
-        discretization_y = (top_y - bot_y) / GRIDROWS;
-    }
+    // -- On invalid input exit.
+    if (zoom_x == 0.0 || zoom_y == 0.0) { return; }
+
+    // -- Scale X-axis.
+    right_x *= zoom_x;
+    left_x *= zoom_x;
+
+    // -- Scale X-axis.
+    top_y *= zoom_y;
+    bot_y *= zoom_y;
+
+    discretization_x = (right_x - left_x) / COLS;
+    discretization_y = (top_y - bot_y) / ROWS;
+
     updateGraph();
 }
+
 
 void Graph::translateGraph(double deltaX, double deltaY){
     // -- translate X-axis
@@ -78,16 +74,18 @@ void Graph::translateGraph(double deltaX, double deltaY){
 
 
 void Graph::printGraph(){
-    for(int row = 0; row < GRIDROWS; row++){
-        cout << "[ ";
-        for(int col = 0; col < GRIDCOLS; col++){
-            cout << "(";
-            cout << (left_x + (row * discretization_x)) << ",";
-            cout << (top_y - (col * discretization_y));
-            cout << ") ";
-        }
-        cout << " ]" << endl;
+    for(int i = 0; i < field_data_size; i += 3){
+        int idx = i / 3.0;
+        printf("<%.0f, %3.0f, %3.0f>,      ", field_data[i+0], field_data[i+1], field_data[i+2]);
+        if ((idx + 1) % (COLS - 1) == 0) { printf("\n"); }
     }
+    printf("\n");
+}
+
+void Graph::initFieldData(){
+    field_data_size = ((double)COLS - 1) * ((double)ROWS - 1) * 3;
+    field_data_size_bytes = field_data_size * sizeof(double);
+    field_data = (double*)calloc(field_data_size, sizeof(double));
 }
 
 

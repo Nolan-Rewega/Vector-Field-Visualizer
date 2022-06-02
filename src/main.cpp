@@ -1,22 +1,30 @@
 #include<iostream>
 #include"Math.h"
-#include"Grid.h"
+#include"Graph.h"
 #include"Display.h"
 
 using namespace std;
 
 int main(){
     /* Intializing objects */
-    Grid field;
+    Graph* field = new Graph(10, 10, 0);
     Display screen;
+    Math mathObj;
     
+    //field->printGraph();
+
+    // -- Get input from user.
+    //mathObj.getInput();
+
     while(!screen.check_termination()){
         /* data retreval */
         
-        /* OpenGL proccesies*/
-        screen.background();
-        screen.update_vertices(field.vector_data);
-        screen.plot_vectors();
+        /* data convertion to Graph object. */
+
+
+
+        /* OpenGL Rendering */
+        //screen.draw_graph(nullptr);
         screen.poll_events();
     }
     screen.exit();

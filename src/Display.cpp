@@ -2,123 +2,83 @@
 #include"Display.h"
 
 Display::Display(){    
-    bool status = init();
-}
-
-bool Display::init(){
-	// Initialize GLFW
+	// -- Initialization.
 	glfwInit();
+
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	window = glfwCreateWindow(800, 600, "VFV", NULL, NULL);
-	if (window == NULL){
-		cout << "Error in glfwCreateWindow.." << endl;
-		glfwTerminate();
-		return false;
-	}
 	glfwMakeContextCurrent(window);
-	gladLoadGL(glfwGetProcAddress);
+
+	gladLoadGL();
+	glEnable(GL_DEPTH_TEST);
 	glViewport(0, 0, 800, 600);
 
+	// -- Read in shaders.
+	std::string VSSinput = readShaderCode("vertexshader.glsl");
+	std::string FSSinput = readShaderCode("fragmentshader.glsl");
+	const char* VSS = VSSinput.c_str();
+	const char* FSS = FSSinput.c_str();
+
+
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-
 	program = glCreateProgram();
+
+	// -- Compilation and linking.
+	glShaderSource(vertexShader, 1, &VSS, NULL);
+	glCompileShader(vertexShader);
+	glShaderSource(fragmentShader, 1, &FSS, NULL);
+	glCompileShader(fragmentShader);
 	glAttachShader(program, vertexShader);
 	glAttachShader(program, fragmentShader);
 	glLinkProgram(program);
 
-	// Delete the now useless Vertex and Fragment Shader objects
+	// -- Delete shaders after linking.
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-
-	// Vertices coordinates
-	GLfloat points[] = {
-	    1.0f,   0.0f,   0.0f, // Lower left corner
-	    -1.0f,   0.0f,   0.0f, // Lower right corner
-
-	    0.0f,   1.0f,   0.0f, // Lower left corner
-		0.0f,   -1.0f,   0.0f, // Lower right corner
-	};
-    
-    vertices = points;
-    
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(points), vertices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-    return true;
-}
-
-void Display::update_vertices(vector<vector<double>> point_data){
-    
-	/* create a the vertex's for the vectors
-        {   "start x", "start y", "end x", "end y"
-            ...         ...         ...     ...
-        }
-    */
-	GLfloat vectors[point_data.size() * 3];
-    int counter = 0;
-
-    /* get vector data from each point */
-    for(int idx = 0; idx < point_data.size(); idx++){
-        for(int item = 0; item < 3; item++){
-            vectors[counter] = point_data[idx][item];
-        }
-    }
-    // angle = sin(rise / sqrt(run^2 + rise^2))
-    
-    
-    vertices = vectors;
-    
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(points), vertices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-}
-
-void Display::background(){
-    // -- pre
-    glClearColor(0.08f, 0.15f, 0.15f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
 }
 
 
-void Display::plot_vectors(){
-    // -- actual action
+
+void Display::draw_graph(Graph* graph){
+	glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // -- Draw the Graphs borders.
+
+
+
     glUseProgram(program);
     glBindVertexArray(VAO);
     glLineWidth(4);
     glDrawArrays(GL_LINES, 0, 4);
+
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+
+	// -- Draw the Graphs vectors
+
+
+
+
+	glUseProgram(program);
+	glBindVertexArray(VAO);
+	glLineWidth(4);
+	glDrawArrays(GL_LINES, 0, 4);
+
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+
+	// -- Swap front and back buffers
+	glfwSwapBuffers(window);
 }
 
 
 void Display::poll_events(){
-    // -- post
-    glfwSwapBuffers(window);
     glfwPollEvents();
 }
 
@@ -137,3 +97,16 @@ void Display::exit(){
 	glfwTerminate();
 }
 
+string Display::readShaderCode(const char* filename) {
+	string shader, line;
+	ifstream inputFile(filename);
+	if (!inputFile.good()) {
+		cout << "FAILED TO LOAD FILE: " << filename << " IN readSHaderCode()" << endl;
+		exit();
+	}
+	while (getline(inputFile, line)) {
+		shader.append(line);
+		shader.append("\n");
+	}
+	return shader;
+}
