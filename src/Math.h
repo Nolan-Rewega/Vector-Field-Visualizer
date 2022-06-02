@@ -19,9 +19,9 @@ class Math{
 public:
     vector<string> equations;
     vector<string> swapped;
-    vector<double> result;
+    double* resultArray;
 
-    map <string, double> variables;
+    map<string, double> variables;
     map<string, int> functions;
    
     vector<int> plus, minus, mult, div, power;
@@ -32,11 +32,14 @@ public:
     /* Methods */
     Math();
     void getInput();
-    void setVarValues(double x,double y, double z);
-    void parseToPostFix(double x, double y, double z);
-    string swapVariablesWithValues(string eq);
+    double* parseToPostFix(double x, double y, double z);
+
     string shunting(string eq);
     double evalPostfix(string eq);
+
+private:
+    void setVarValues(double x, double y, double z);
+    string swapVariablesWithValues(string eq);
     double compute(vector<double> args, string op);
     bool isNumber(string token);
 };

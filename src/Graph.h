@@ -23,13 +23,14 @@ public:
     double field_data_size_bytes;
 
     // -- solver object
-    Math solver;
+    Math* solver;
 
 
     /* Methods */
-    Graph(int rows, int cols, int aisles);
+    Graph(int rows, int cols, int aisles, Math* mathobj);
     ~Graph();
     void updateGraph();
+    void calculateField();
     void scaleGraph(double zoom_x, double zoom_y);
     void translateGraph(double deltaX, double deltaY);
     void printGraph();

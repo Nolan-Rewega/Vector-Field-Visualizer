@@ -23,9 +23,9 @@ public:
     
     /* Methods */
     Display();
-    bool check_termination();
-    void draw_graph(Graph* graph);
-    void poll_events();
+    bool checkTermination();
+    void drawGraph(Graph* graph);
+    void pollEvents();
     void exit();
 
 private:

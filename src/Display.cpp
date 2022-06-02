@@ -44,7 +44,7 @@ Display::Display(){
 
 
 
-void Display::draw_graph(Graph* graph){
+void Display::drawGraph(Graph* graph){
 	glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -78,12 +78,12 @@ void Display::draw_graph(Graph* graph){
 }
 
 
-void Display::poll_events(){
+void Display::pollEvents(){
     glfwPollEvents();
 }
 
 
-bool Display::check_termination(){
+bool Display::checkTermination(){
     return glfwWindowShouldClose(window);
 }
 

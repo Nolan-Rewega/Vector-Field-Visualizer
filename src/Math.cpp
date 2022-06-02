@@ -1,18 +1,18 @@
 #include"Math.h"
 
 Math::Math(){
-    /* legal variables*/
+    /* legal variables */
     variables = {
         {"x", 3}, {"y", 2}, {"z", 1}, {"w", 0}
     };
     
     /* vector list of common math functions. */
     functions = {
-        {"sin", 1},     {"cos", 1},     {"tan", 1}, 
-        {"sin^-1", 1},  {"cos^-1", 1},  {"tan^-1", 1},
-        {"csc", 1},     {"sec", 1},     {"coh", 1},
-        {"csc^-1", 1},  {"sec^-1", 1},  {"coh^-1", 1},
-        {"!", 1},       {"ln", 1},      {"log", 1}
+        {"sin",     1},     {"cos",     1},     {"tan",     1}, 
+        {"asin",    1},     {"acos",    1},     {"atan",    1},
+        {"csc",     1},     {"sec",     1},     {"cot",     1},
+        {"acsc",    1},     {"asec",    1},     {"acot",    1},
+        {"!",       1},     {"ln",      1},     {"log",     1}
     };
    
     /* priority and evalutation type of operators */
@@ -28,11 +28,13 @@ Math::Math(){
 }
 
 
+
+
 void Math::getInput(){
     // -- get user input, this should be done seperatly
     string input;
     cout << "Enter a equation or EoF (CTRL + D)" << endl; 
-    cout << "e.g ( 3 * x + y ^ 2 )" << endl;
+    cout << "e.g: ( 3 * x + y ^ 2 )" << endl;
     for(int i = 0; i < 2; i++){
         cout << "Enter Equations " << i+1 << ". \n";
         getline(cin, input);
@@ -41,11 +43,11 @@ void Math::getInput(){
         }
     }
     swapped.resize(equations.size(), " ");
-    result.resize(equations.size(), 0.0);
+    resultArray = (double*)calloc(equations.size(), sizeof(double));
 }
    
    
-void Math::parseToPostFix(double x, double y, double z){
+double* Math::parseToPostFix(double x, double y, double z){
     for(unsigned long e = 0; e < equations.size(); e++){
         /*
             run dijkstras shunnting yard algorithm on equation e.
@@ -54,40 +56,10 @@ void Math::parseToPostFix(double x, double y, double z){
         setVarValues(x ,y ,z);
         swapped[e] = swapVariablesWithValues(equations[e]);
         swapped[e] = shunting(swapped[e]);
-        result[e] = evalPostfix(swapped[e]);
+        resultArray[e] = evalPostfix(swapped[e]);
     }
+    return resultArray;
 }
-
-
-void Math::setVarValues(double x, double y, double z){
-    variables["x"] = x;
-    variables["y"] = y;
-    variables["z"] = z;
-}
-
-
-string Math::swapVariablesWithValues(string eq){
-    string copy = eq; string delim = " "; string token;
-    size_t idx = 0; size_t pos = 0;
-    cout << "START: "<< eq << endl;
-    
-    while( (idx = eq.find(delim)) != std::string::npos){
-        // get each individual component
-        token = eq.substr(0, idx);
-        eq.erase(0, idx + delim.length());
-        
-        pos = copy.find(token);
-        while(pos != std::string::npos && variables.find(token) != variables.end()){
-            // get each individual component
-            string substitute = to_string(variables[token]);
-            copy.replace(pos, token.size(), substitute);
-            pos = copy.find(token, pos + substitute.size());
-        }
-    }
-    cout << "SWAPPED: " << copy << endl;
-    return copy;
-}
-
 
 string Math::shunting(string eq){
     
@@ -141,21 +113,23 @@ string Math::shunting(string eq){
         else { output.push(top); }
     }
     
-    // create the infix String
-    string infix;
+    // create the postfix String
+    string postfix;
     while(!output.empty()) { 
-        infix = infix + output.front() + " ";
+        postfix = postfix + output.front() + " ";
         output.pop();
     }
-    return infix;
+    return postfix;
 }
         
 
 double Math::evalPostfix(string eq){
+    cout << eq << endl;
     stack<double> num_stack;
     vector<double> args;
     string delim = " ";
-    string token; size_t idx;
+    string token; 
+    size_t idx;
 
     while( (idx = eq.find(delim)) != std::string::npos){
         // get each individual component
@@ -176,45 +150,81 @@ double Math::evalPostfix(string eq){
         }
 
     } 
-    cout << "RESULT (evalpostfix): " << num_stack.top() << endl;
     return num_stack.top();
 };
 
+
+
+
+
+// ~~~~~~~~~ PRIVATE METHODS ~~~~~~~~~~~~~~
+
+string Math::swapVariablesWithValues(string eq) {
+    string copy = eq; string delim = " "; string token;
+    size_t idx = 0; size_t pos = 0;
+    cout << "START: " << eq << endl;
+
+    while ((idx = eq.find(delim)) != std::string::npos) {
+        // get each individual component
+        token = eq.substr(0, idx);
+        eq.erase(0, idx + delim.length());
+
+        pos = copy.find(token);
+        while (pos != std::string::npos && variables.find(token) != variables.end()) {
+            // get each individual component
+            string substitute = to_string(variables[token]);
+            copy.replace(pos, token.size(), substitute);
+            pos = copy.find(token, pos + substitute.size());
+        }
+    }
+    cout << "SWAPPED: " << copy << endl;
+    return copy;
+}
+
+
 // used in evaluation of the postfix expression
 double Math::compute(vector<double> args, string op){
-    double value_one = args[0];
-    double value_two = args[1];
-    if(op == "+"){return value_two + value_one;}
-    else if(op == "-"){return value_two - value_one;}
-    else if(op == "*"){return value_two * value_one;}
-    else if(op == "/"){return value_two / value_one;}
-    else if(op == "^"){return pow(value_two, value_one);}
+
+    if(op == "+"){return args[1] + args[0];}
+    else if(op == "-"){return args[1] - args[0];}
+    else if(op == "*"){return args[1] * args[0];}
+    else if(op == "/"){return args[1] / args[0];}
+    else if(op == "^"){return pow(args[1], args[0]);}
     else if(op == "!"){
-        double result = value_one;
-        while(value_one > 1){
-            value_one--;
-            result = result * value_one;
+        double result = args[0];
+        while(args[0] > 1){
+            args[0]--;
+            result = result * args[0];
         }
         return result;
     }
     
-    else if(op == "sin"){return sin( value_one);}
-    else if(op == "cos"){return cos( value_one);}
-    else if(op == "tan"){return tan( value_one);}
-    else if(op == "sec"){return 1/(sin( value_one));}
-    else if(op == "csc"){return 1/(cos( value_one));}
-    else if(op == "coh"){return cos(value_one) / sin(value_one);}   
-    else if(op == "sin^-1"){return asin( value_one);}
-    else if(op == "cos^-1"){return acos( value_one);}
-    else if(op == "tan^-1"){return atan( value_one);}
-    else if(op == "log"){return log10(value_one);}
-    else if(op == "ln"){return log(value_one);}
+    else if(op == "sin"){return sin( args[0]);}
+    else if(op == "cos"){return cos( args[0]);}
+    else if(op == "tan"){return tan( args[0]);}
+    else if(op == "sec"){return 1/(sin( args[0]));}
+    else if(op == "csc"){return 1/(cos( args[0]));}
+    else if(op == "cot"){return cos(args[0]) / sin(args[0]);}   
+    else if(op == "asin"){return asin( args[0]);}
+    else if(op == "acos"){return acos( args[0]);}
+    else if(op == "atan"){return atan( args[0]);}
+    else if(op == "asec"){return acos(1 / args[0]);}
+    else if(op == "acsc"){return asin(1 / args[0]);}
+    else if(op == "acot"){return atan(-args[0]) + 3.1415 / 2;}
+    else if(op == "log"){return log10(args[0]);}
+    else if(op == "ln"){return log(args[0]);}
     else {
         cout << "COMPUTE ERROR" << endl;
         return -1;
     }
 }
-    
+ 
+void Math::setVarValues(double x, double y, double z) {
+    variables["x"] = x;
+    variables["y"] = y;
+    variables["z"] = z;
+}
+
 /* helper function */
 bool Math::isNumber(string token){
     int numeric_flag = 0;

@@ -2,7 +2,7 @@
 
 
 /* classic cartesean system, 4 quadrants */
-Graph::Graph(int rows, int cols, int aisles){
+Graph::Graph(int rows, int cols, int aisles, Math* mathObj){
     
     ROWS = rows;
     COLS = cols;
@@ -18,6 +18,8 @@ Graph::Graph(int rows, int cols, int aisles){
     discretization_y = (top_y - bot_y) / ROWS;
     discretization_z = (front_z - back_z) / AISLES;
     
+    solver = mathObj;
+
     // --  Initilization of the Grid.
     initFieldData();
     updateGraph();
@@ -29,16 +31,26 @@ Graph::~Graph(){
  
 
 void Graph::updateGraph() {
-    //double* result = nullptr;
     for (int r = 0; r < ROWS - 1; r++) {
         for (int c = 0; c < COLS - 1; c++) {
-            //result = solver.parseToPostFix((left_x + (c * discretization_x)), (top_y - (r * discretization_y)), 0.0);
-            field_data[((COLS - 1) * r + c) * 3 + 0] = (left_x + ((c+1) * discretization_x));
-            field_data[((COLS - 1) * r + c) * 3 + 1] = ( top_y - ((r+1) * discretization_y));
+            field_data[((COLS - 1) * r + c) * 3 + 0] = (left_x + (c * discretization_x));
+            field_data[((COLS - 1) * r + c) * 3 + 1] = (top_y - (r * discretization_y));
             field_data[((COLS - 1) * r + c) * 3 + 2] = 0.0;
         }
     }
 }
+
+void Graph::calculateField(){
+    double* results = nullptr;
+    for (int i = 0; i < (ROWS - 1) * (COLS - 1) * 3; i += 3) {
+        results = solver->parseToPostFix(field_data[i + 0], field_data[i + 1], field_data[i + 2]);
+        field_data[i + 0] = results[0];
+        field_data[i + 1] = results[1];
+        field_data[i + 2] = results[2];
+    }
+}
+
+
 
 
 void Graph::scaleGraph(double zoom_x, double zoom_y){
@@ -57,6 +69,7 @@ void Graph::scaleGraph(double zoom_x, double zoom_y){
     discretization_y = (top_y - bot_y) / ROWS;
 
     updateGraph();
+    calculateField();
 }
 
 
@@ -70,7 +83,10 @@ void Graph::translateGraph(double deltaX, double deltaY){
     bot_y += deltaY;
 
     updateGraph();
+    calculateField();
 }
+
+
 
 
 void Graph::printGraph(){
