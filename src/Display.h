@@ -1,16 +1,15 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#define GLFW_INCLUDE_NONE
 #include<iostream>
 #include<fstream>
 #include<string>
 
-#include<GLFW/glfw3.h>
 #include<glad/glad.h>
-//#include"linmath.h"
+#include<GLFW/glfw3.h>
 
 #include"Graph.h"
+#include"Arrow.h"
 
 using namespace std;
 
@@ -18,13 +17,14 @@ class Display{
 public:
     /* Attributes*/
 	GLFWwindow* window;
-	GLuint vertexShader, fragmentShader, program;
+	GLuint program, program2;
     GLuint VAO, VBO;
     
     /* Methods */
     Display();
     bool checkTermination();
     void drawGraph(Graph* graph);
+    void drawArrow(Arrow* arrow);
     void pollEvents();
     void exit();
 

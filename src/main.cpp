@@ -9,21 +9,23 @@ int main(){
     /* Intializing objects */
     Display* display = new Display();
     Math* mathObj = new Math();
-    Graph* field = new Graph(10, 10, 0, mathObj);
+    Graph* field = new Graph(25, 25, 0, mathObj);
 
     // -- Get input from user.
     mathObj->getInput();
     field->calculateField();
 
+    /* OpenGL Rendering */
+    display->drawGraph(field);
 
     while(!display->checkTermination()){
 
-        /* OpenGL Rendering */
-        display->drawGraph(field);
         display->pollEvents();
     }
     display->exit();
-    
+
+
+
     ///* Testing Math parser */
     //Math test;
     //string a1 = test.shunting("3 + 4 * 2 ");
@@ -54,8 +56,6 @@ int main(){
     //cout << "RESULT OF (" << a10<< ") = " << test.evalPostfix(a10) <<endl;
     //cout << "RESULT OF (" << a11<< ") = " << test.evalPostfix(a11) <<endl;
     //cout << "RESULT OF (" << a12<< ") = " << test.evalPostfix(a12) <<endl;
-
-    //test.parseToPostFix(10,1,2);
 
     return 1;
 };

@@ -124,7 +124,7 @@ string Math::shunting(string eq){
         
 
 double Math::evalPostfix(string eq){
-    cout << eq << endl;
+    //cout << eq << endl;
     stack<double> num_stack;
     vector<double> args;
     string delim = " ";
@@ -162,7 +162,7 @@ double Math::evalPostfix(string eq){
 string Math::swapVariablesWithValues(string eq) {
     string copy = eq; string delim = " "; string token;
     size_t idx = 0; size_t pos = 0;
-    cout << "START: " << eq << endl;
+    //cout << "START: " << eq << endl;
 
     while ((idx = eq.find(delim)) != std::string::npos) {
         // get each individual component
@@ -177,7 +177,7 @@ string Math::swapVariablesWithValues(string eq) {
             pos = copy.find(token, pos + substitute.size());
         }
     }
-    cout << "SWAPPED: " << copy << endl;
+    //cout << "SWAPPED: " << copy << endl;
     return copy;
 }
 
