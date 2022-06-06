@@ -2,24 +2,35 @@
 #include"Math.h"
 #include"Graph.h"
 #include"Display.h"
+#include"Camera.h"
+
+static void handleMouseMovement(GLFWwindow* window, double xpos, double ypos);
 
 using namespace std;
 
+// -- Yucky globals
+Camera* camera = new Camera(0.005f, 1.0f);
+GLfloat prevX = 0.0f;
+GLfloat prevY = 0.0f;
+
 int main(){
     /* Intializing objects */
-    Display* display = new Display();
     Math* mathObj = new Math();
-    Graph* field = new Graph(25, 25, 0, mathObj);
-
-    // -- Get input from user.
     mathObj->getInput();
+
+
+    Graph* field = new Graph(25, 25, 0, mathObj);
+    Display* display = new Display(camera);
+
+    // -- set callback functions
+    glfwSetCursorPosCallback(display->getWindow(), handleMouseMovement);
+
+    // -- calculate field.
     field->calculateField();
 
-    /* OpenGL Rendering */
-    display->drawGraph(field);
-
     while(!display->checkTermination()){
-
+        /* OpenGL Rendering */
+        display->drawGraph(field);
         display->pollEvents();
     }
     display->exit();
@@ -59,3 +70,16 @@ int main(){
 
     return 1;
 };
+
+
+// -- Yucky fuction location.
+static void handleMouseMovement(GLFWwindow* window, double xpos, double ypos){
+    cout << prevX - xpos << "   " << prevY - ypos << endl;
+    
+    camera->sphereRotation(prevX - xpos, prevY - ypos);
+    prevX = xpos;
+    prevY = ypos;
+}
+
+
+

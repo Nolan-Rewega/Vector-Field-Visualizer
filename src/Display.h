@@ -10,6 +10,7 @@
 
 #include"Graph.h"
 #include"Arrow.h"
+#include"Camera.h"
 
 using namespace std;
 
@@ -20,11 +21,14 @@ public:
 	GLuint program, program2;
     GLuint VAO, VBO, EBO;
     
+    Camera* camera;
+
     /* Methods */
-    Display();
+    Display(Camera* cam);
     bool checkTermination();
     void drawGraph(Graph* graph);
     void drawArrow(Arrow* arrow);
+    GLFWwindow* getWindow();
     void pollEvents();
     void exit();
 

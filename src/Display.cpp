@@ -1,9 +1,12 @@
-#define GLFW_INCLUDE_NONE
 #include"Display.h"
 
 
 
-Display::Display(){    
+Display::Display(Camera* cam){  
+	
+	// -- Set Camera reference.
+	camera = cam;
+
 	// -- Initialization.
 	glfwInit();
 
@@ -112,8 +115,8 @@ void Display::drawArrow(Arrow* arrow) {
 
 
 	// -- matrix operations
-	//glm::mat4 projectionMat4 = glm::perspective(glm::radians(90.0f), 800.0f / 600.0f, 0.0f, 10.0f);
-	glm::mat4 transform = arrow->getTranslationMatrix() * arrow->getRotationMatrix();
+	glm::mat4 projectionMat4 = glm::perspective(glm::radians(90.0f), 800.0f / 600.0f, 0.1f, 10.0f);
+	glm::mat4 transform = projectionMat4 * camera->getWorldToViewMatrix() * arrow->getTranslationMatrix() * arrow->getRotationMatrix();
 
 	GLint transformMat4Loc = glGetUniformLocation(program, "transformMat4");
 	glUniformMatrix4fv(transformMat4Loc, 1, GL_FALSE, &transform[0][0]);
@@ -129,6 +132,9 @@ void Display::drawArrow(Arrow* arrow) {
 	glDeleteBuffers(1, &EBO);
 }
 
+GLFWwindow* Display::getWindow() {
+	return window;
+}
 
 void Display::pollEvents(){
     glfwPollEvents();

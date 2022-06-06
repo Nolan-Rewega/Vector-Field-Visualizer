@@ -69,7 +69,7 @@ void Arrow::rotateArrow(glm::vec3 angleVec, GLfloat angle){
 }
 
 void Arrow::translateArrow(glm::vec3 targetPos) {
-	translationMatrix = glm::translate(glm::mat4(1.0f), targetPos);
+	translationMatrix = glm::translate(glm::mat4(1.0f), (targetPos + glm::vec3(0.0f, 0.0f, -3.0f)));
 	fillVertexData();
 }
 
