@@ -69,11 +69,8 @@ void Graph::calculateField(){
 
         glm::vec3 wrldpos = glm::vec3(-0.8f + (col * 1.6f / COLS), 0.8f - (row * 1.6f / ROWS), 0.0f);
 
-
         results = solver->parseToPostFix(field_data[i + 0], field_data[i + 1], field_data[i + 2]);
-        glm::vec3 vec = glm::vec3(results[0], results[1], 0.0f);
-        
-        Arrow* a = new Arrow(glm::normalize(vec), 1.6f/COLS, 1.6f/ROWS);
+        Arrow* a = new Arrow(glm::vec3(results[0], results[1], 0.0f), 1.6f/COLS, 1.6f/ROWS, 0);
         a->translateArrow(wrldpos);
         arrow_data.push_back(a);
 

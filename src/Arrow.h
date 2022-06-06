@@ -13,23 +13,13 @@
 class Arrow{
 public:
 
-	GLfloat* vertexData;
-	GLfloat  vertexDataSizeBytes;
-
-	glm::vec3 ArrowCenterLocation;
-
-	GLfloat width, height, length;
-	GLfloat top, bot, left, right, front, back;
-	GLfloat theta;
-
-	glm::mat4 translationMatrix;
-	glm::mat4 rotationMatrix;
-
-	Arrow(glm::vec3 normalizedVector, GLfloat width, GLfloat height);
+	Arrow(glm::vec3 normalizedVector, GLfloat width, GLfloat height, GLfloat length);
 	~Arrow();
 
 	GLfloat* getVertexData();
 	int getVertexDataSizeBytes();
+	GLushort* getIndiceData();
+	int getIndiceDataSizeBytes();
 	glm::mat4 getTranslationMatrix();
 	glm::mat4 getRotationMatrix();
 
@@ -37,6 +27,21 @@ public:
 	void translateArrow(glm::vec3 targetPos);
 
 private:
+
+	GLfloat* vertexData;
+	int  vertexDataSizeBytes;
+	GLushort* indiceData;
+	int  indiceDataSizeBytes;
+
+
+	GLfloat red, green, blue, magnitude;
+	GLfloat width, height, length;
+	GLfloat theta, phi;
+
+	glm::mat4 translationMatrix;
+	glm::mat4 rotationMatrix;
+
+
 	void fillVertexData();
 };
 

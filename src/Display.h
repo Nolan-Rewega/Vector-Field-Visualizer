@@ -18,7 +18,7 @@ public:
     /* Attributes*/
 	GLFWwindow* window;
 	GLuint program, program2;
-    GLuint VAO, VBO;
+    GLuint VAO, VBO, EBO;
     
     /* Methods */
     Display();

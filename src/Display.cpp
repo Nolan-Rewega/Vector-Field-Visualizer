@@ -59,7 +59,7 @@ Display::Display(){
 }
 
 void Display::drawGraph(Graph* graph) {
-	glClearColor(0.0f, 0.0f, 0.1f, 1.0f);
+	glClearColor(0.1f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// -- Draw the Graphs borders.
@@ -96,11 +96,15 @@ void Display::drawArrow(Arrow* arrow) {
 	// -- Draw the Graphs vectors
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-
+	glGenBuffers(1, &EBO);
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, arrow->getVertexDataSizeBytes(), arrow->getVertexData(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, arrow->getIndiceDataSizeBytes(), arrow->getIndiceData(), GL_STATIC_DRAW);
+
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)0);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(sizeof(GLfloat) * 3));
@@ -109,19 +113,20 @@ void Display::drawArrow(Arrow* arrow) {
 
 	// -- matrix operations
 	//glm::mat4 projectionMat4 = glm::perspective(glm::radians(90.0f), 800.0f / 600.0f, 0.0f, 10.0f);
-	glm::mat4 fullBoy = arrow->getTranslationMatrix() * arrow->getRotationMatrix();
+	glm::mat4 transform = arrow->getTranslationMatrix() * arrow->getRotationMatrix();
 
 	GLint transformMat4Loc = glGetUniformLocation(program, "transformMat4");
-	glUniformMatrix4fv(transformMat4Loc, 1, GL_FALSE, &fullBoy[0][0]);
+	glUniformMatrix4fv(transformMat4Loc, 1, GL_FALSE, &transform[0][0]);
 
 
 	glUseProgram(program);
 	glBindVertexArray(VAO);
-	glLineWidth(2);
-	glDrawArrays(GL_LINES, 0, 6);
+	glDrawElements(GL_TRIANGLES, 48, GL_UNSIGNED_SHORT, 0);
+
 
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
 }
 
 
