@@ -9,7 +9,7 @@ static void handleMouseMovement(GLFWwindow* window, double xpos, double ypos);
 using namespace std;
 
 // -- Yucky globals
-Camera* camera = new Camera(0.005f, 1.0f);
+Camera* camera = new Camera(0.01f, 1.5f);
 GLfloat prevX = 0.0f;
 GLfloat prevY = 0.0f;
 
@@ -19,7 +19,7 @@ int main(){
     mathObj->getInput();
 
 
-    Graph* field = new Graph(25, 25, 0, mathObj);
+    Graph* field = new Graph(6, 6, 6, mathObj);
     Display* display = new Display(camera);
 
     // -- set callback functions
@@ -27,6 +27,7 @@ int main(){
 
     // -- calculate field.
     field->calculateField();
+    //display->drawGraph(field);
 
     while(!display->checkTermination()){
         /* OpenGL Rendering */
@@ -74,8 +75,6 @@ int main(){
 
 // -- Yucky fuction location.
 static void handleMouseMovement(GLFWwindow* window, double xpos, double ypos){
-    cout << prevX - xpos << "   " << prevY - ypos << endl;
-    
     camera->sphereRotation(prevX - xpos, prevY - ypos);
     prevX = xpos;
     prevY = ypos;

@@ -20,24 +20,21 @@ Arrow::Arrow(glm::vec3 vector, GLfloat w, GLfloat h, GLfloat l){
 		green = magnitude / 50.0f;
 	}
 
-	// -- 13 vertices per Arrow, 6 components per vertex.
-	vertexDataSizeBytes = 13.0f * 6.0f * sizeof(GLfloat);
-	vertexData = (GLfloat*)calloc(13.0f * 6.0f, sizeof(GLfloat));
-
+	// -- calculate rotation angles.
 	theta = atan(vector.x / vector.y);
-	theta += (vector.y < 0.0f) ? 3.14f : 0.0f;
 
 	phi = atan(vector.z / vector.y);
 	phi += (vector.y < 0.0f) ? 3.14f : 0.0f;
 
+	// -- 13 vertices per Arrow, 6 components per vertex.
+	numberOfVertices = 13;
+	vertexDataByteSize = numberOfVertices * 6 * sizeof(GLfloat);
+	vertexData = (GLfloat*)calloc(numberOfVertices * 6, sizeof(GLfloat));
 
-	fillVertexData();
-	rotateArrow(glm::vec3(0.0f, 0.0f, 1.0f), -theta);
-	//rotateArrow(glm::vec3(0.0f, 0.0f, 1.0f), -phi);
-
-	// -- define indice order, ALl in front winding order.
-	indiceDataSizeBytes = 48 * sizeof(GLushort);
-	indiceData = (GLushort*)calloc(48, sizeof(GLushort));
+	// -- 12 Lines per border, 2 Indices per line.
+	numberOfDataIndices = 48;
+	dataIndicesByteSize = numberOfDataIndices * sizeof(GLushort);
+	dataIndices = (GLushort*)calloc(dataIndicesByteSize, sizeof(GLushort));
 	GLushort test[48] =
 	{
 		0, 2, 3,	1, 0, 3,	4,  0, 1,	5,  4, 1,
@@ -45,33 +42,22 @@ Arrow::Arrow(glm::vec3 vector, GLfloat w, GLfloat h, GLfloat l){
 		5, 1, 3,	5, 3, 7,	8, 10,11,	8, 11, 9,
 		12,8, 9,	12,10,8,	12,11,10,	12, 9,11
 	};
-	for (int i = 0; i < 48; i++) { indiceData[i] = test[i];}
+	for (int i = 0; i < 48; i++) { dataIndices[i] = test[i];}
+
+	translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -3.0f, 0.0f));
+	rotationMatrix = glm::mat4(1.0f);
+
+
+	fillVertexData();
+	rotateShape(glm::vec3(0.0f, 0.0f, 1.0f), -theta);
+	rotateShape(glm::vec3(1.0f, 0.0f, 0.0f), phi);
 
 }
 
 Arrow::~Arrow(){
-	free(vertexData);
+	freeVertexData();
 }
 
-
-
-GLfloat* Arrow::getVertexData(){ return vertexData; }
-int Arrow::getVertexDataSizeBytes(){ return vertexDataSizeBytes; }
-GLushort* Arrow::getIndiceData() { return indiceData; }
-int Arrow::getIndiceDataSizeBytes() { return indiceDataSizeBytes; }
-glm::mat4 Arrow::getTranslationMatrix() { return translationMatrix; }
-glm::mat4 Arrow::getRotationMatrix() { return rotationMatrix; }
-
-
-void Arrow::rotateArrow(glm::vec3 angleVec, GLfloat angle){
-	rotationMatrix = glm::rotate(glm::mat4(1.0f), angle, angleVec);
-	fillVertexData();
-}
-
-void Arrow::translateArrow(glm::vec3 targetPos) {
-	translationMatrix = glm::translate(glm::mat4(1.0f), (targetPos + glm::vec3(0.0f, 0.0f, -3.0f)));
-	fillVertexData();
-}
 
 
 

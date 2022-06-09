@@ -18,7 +18,7 @@ class Display{
 public:
     /* Attributes*/
 	GLFWwindow* window;
-	GLuint program, program2;
+	GLuint program;
     GLuint VAO, VBO, EBO;
     
     Camera* camera;

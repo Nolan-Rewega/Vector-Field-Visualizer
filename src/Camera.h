@@ -17,7 +17,7 @@ public:
 
 
 private:
-	GLfloat SENSE, cameraSpeed;
+	GLfloat SENSE;
 	GLfloat radius, theta, phi;
 
 	glm::vec3 eyePosition;

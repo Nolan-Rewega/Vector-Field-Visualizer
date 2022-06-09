@@ -1,31 +1,27 @@
-#ifndef GRID_H
-#define GRID_H
+#ifndef GRAPH_H
+#define GRAPH_H
 
 #include <iostream>
 #include <vector>
 
 #include"Math.h"
 #include"Arrow.h"
+#include"Shape.h"
 
 using namespace std;
 
-class Graph{
+class Graph : public Shape{
 public:
     /* Methods */
     Graph(int rows, int cols, int aisles, Math* mathobj);
     ~Graph();
 
-    int getGraphBordersSizeBytes();
-    GLfloat* getGraphBorders();
     vector<Arrow*> getArrows();
-
-
 
     void updateGraph();
     void calculateField();
-    void scaleGraph(GLfloat zoom_x, GLfloat zoom_y);
-    void translateGraph(GLfloat deltaX, GLfloat deltaY);
-    void printGraph();
+
+
 
 private:
     // -- Constant definitions.
@@ -37,21 +33,18 @@ private:
     GLfloat left_x, bot_y, right_x, top_y, front_z, back_z;
     GLfloat discretization_x, discretization_y, discretization_z;
 
-    // -- store 2D vector data
+    std::vector<Arrow*> arrow_data;
+
+    // -- store vector data
     GLfloat* field_data;
-    GLfloat field_data_size;
+    int field_data_size;
     GLfloat field_data_size_bytes;
-
-    vector<Arrow*> arrow_data;
-
-    GLfloat* border_data;
 
     // -- solver object
     Math* solver;
 
-
-    void initFieldData();
     void fillBorderData();
+    void initFieldData();
 };
-#endif //!GRID_H
+#endif //!GRAPH_H
 

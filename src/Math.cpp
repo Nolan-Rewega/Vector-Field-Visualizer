@@ -35,7 +35,7 @@ void Math::getInput(){
     string input;
     cout << "Enter a equation or EoF (CTRL + D)" << endl; 
     cout << "e.g: ( 3 * x + y ^ 2 )" << endl;
-    for(int i = 0; i < 2; i++){
+    for(int i = 0; i < 3; i++){
         cout << "Enter Equations " << i+1 << ". \n";
         getline(cin, input);
         if(input.size() > 0){
@@ -48,12 +48,12 @@ void Math::getInput(){
    
    
 double* Math::parseToPostFix(double x, double y, double z){
+    setVarValues(x, y, z);
     for(unsigned long e = 0; e < equations.size(); e++){
         /*
             run dijkstras shunnting yard algorithm on equation e.
             replace current equation with the postfix version
         */
-        setVarValues(x ,y ,z);
         swapped[e] = swapVariablesWithValues(equations[e]);
         swapped[e] = shunting(swapped[e]);
         resultArray[e] = evalPostfix(swapped[e]);
