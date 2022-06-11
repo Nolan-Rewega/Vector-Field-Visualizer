@@ -17,7 +17,8 @@ public:
     ~Graph();
 
     vector<Arrow*> getArrows();
-
+    
+    void translateReferenceFrame(glm::vec3 delta);
     void updateGraph();
     void calculateField();
 

@@ -14,7 +14,7 @@ void getUserInput();
 
 // -- Yucky globals :(
 
-Camera* camera = new Camera(0.005f, 1.5f);
+Camera* camera = new Camera(1.0f, 1.5f);
 GLfloat prevX = 0.0f;
 GLfloat prevY = 0.0f;
 
@@ -26,7 +26,8 @@ int dim;
 
 Display* display;
 
-bool DRAGGING = false;
+enum STATE {READY, DRAGGING, XYTRANSLATE, ZTRANSLATE};
+STATE currState = READY;
 
 
 
@@ -100,7 +101,6 @@ void getUserInput() {
     mathObj->getInput();
 }
 
-
 void updateGraph() {
     delete field;
     field = new Graph(ARROWS, ARROWS, ARROWS, mathObj, (dim == 2));
@@ -113,20 +113,38 @@ void updateGraph() {
 
 // -- Yucky functions in main :( .
 static void handleMouseMovement(GLFWwindow* window, double xpos, double ypos){
-    if (DRAGGING) {
-        camera->sphereRotation(prevX - xpos, prevY - ypos);
+    double deltaX = (prevX - xpos) * 0.01;
+    double deltaY = (prevY - ypos) * 0.01;
+
+    if (currState == DRAGGING) {
+        camera->sphereRotation(deltaX, deltaY);
         display->drawGraph(field);
     }
+    if (currState == XYTRANSLATE) {
+        field->translateReferenceFrame(glm::vec3(deltaY, deltaX, 0.0f));
+        display->drawGraph(field);
+    }
+    if (currState == ZTRANSLATE) {
+        field->translateReferenceFrame(glm::vec3(0.0f, 0.0f, -deltaY));
+        display->drawGraph(field);
+    }
+
     prevX = xpos;
     prevY = ypos;
 }
 
 static void handleMouseClick(GLFWwindow* window, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        DRAGGING = true;
+        if (mods == GLFW_MOD_SHIFT) {
+            currState = XYTRANSLATE;
+        }
+        else if (mods == GLFW_MOD_CONTROL) {
+            currState = ZTRANSLATE;
+        }
+        else { currState = DRAGGING; }
     }
     else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-        DRAGGING = false;
+        currState = READY;
     }
 }
 

@@ -62,6 +62,14 @@ Graph::~Graph(){
 vector<Arrow*> Graph::getArrows() { return arrow_data;}
 
 
+void Graph::translateReferenceFrame(glm::vec3 delta){
+    left_x += delta.x;      right_x += delta.x;
+    bot_y += delta.y;      top_y += delta.y;
+    back_z += delta.z;      front_z += delta.z;
+    updateGraph();
+    calculateField();
+}
+
 void Graph::updateGraph() {
 
     int c = 0.0f;
