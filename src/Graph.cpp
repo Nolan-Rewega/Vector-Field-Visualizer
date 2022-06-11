@@ -3,11 +3,11 @@
 #include"Arrow.h"
 
 /* classic cartesean system, 4 quadrants */
-Graph::Graph(int rows, int cols, int aisles, Math* mathObj){
+Graph::Graph(int rows, int cols, int aisles, Math* mathObj, bool is2D){
     
     ROWS = rows;
     COLS = cols;
-    AISLES = aisles;
+    AISLES = (is2D) ? 2: aisles;
 
     /* Internal bounds of the grid */
      left_x = -3.0f;      right_x = 3.0f;
@@ -62,7 +62,6 @@ Graph::~Graph(){
 vector<Arrow*> Graph::getArrows() { return arrow_data;}
 
 
-
 void Graph::updateGraph() {
 
     int c = 0.0f;
@@ -102,7 +101,7 @@ void Graph::calculateField(){
         results = solver->parseToPostFix(field_data[i + 0], field_data[i + 1], field_data[i + 2]);
         //cout << results[0] << "   " << results[1] << "   " << results[2] << endl;
 
-        Arrow* a = new Arrow(glm::vec3(results[0], results[1], results[2]), 1.6f / COLS, 1.6f / ROWS, 0.1f);
+        Arrow* a = new Arrow(glm::vec3(results[0], results[1], results[2]), 1.4f / COLS, 1.4f / ROWS, 0.1f);
         a->translateShape(wrldpos);
         arrow_data.push_back(a);
     }
@@ -121,7 +120,7 @@ void Graph::initFieldData(){
 
 
 void Graph::fillBorderData(){
-    GLfloat size = 0.8f;
+    GLfloat size = 0.7f;
 
     for (int i = 3; i < 8.0f * 6.0f; i += 6) {
         vertexData[i + 0] = 1.0f;

@@ -4,34 +4,48 @@
 #include"Display.h"
 #include"Camera.h"
 
-static void handleMouseMovement(GLFWwindow* window, double xpos, double ypos);
-
 using namespace std;
 
-// -- Yucky globals
-Camera* camera = new Camera(0.01f, 1.5f);
+static void handleMouseMovement(GLFWwindow* window, double xpos, double ypos);
+static void handleMouseClick(GLFWwindow* window, int button, int action, int mods);
+static void handleKeyPress(GLFWwindow* window, int key, int scancode, int action, int mods);
+void updateGraph();
+void getUserInput();
+
+// -- Yucky globals :(
+
+Camera* camera = new Camera(0.005f, 1.5f);
 GLfloat prevX = 0.0f;
 GLfloat prevY = 0.0f;
 
+Math* mathObj = new Math();
+
+Graph* field;
+int ARROWS = 7;
+int dim;
+
+Display* display;
+
+bool DRAGGING = false;
+
+
+
 int main(){
-    /* Intializing objects */
-    Math* mathObj = new Math();
-    mathObj->getInput();
+    // -- Getting intial input.
+    getUserInput();
+    updateGraph();
 
+    display = new Display(camera);
+    display->drawGraph(field);
 
-    Graph* field = new Graph(6, 6, 6, mathObj);
-    Display* display = new Display(camera);
-
-    // -- set callback functions
+    // -- set callback functions.
     glfwSetCursorPosCallback(display->getWindow(), handleMouseMovement);
+    glfwSetMouseButtonCallback(display->getWindow(), handleMouseClick);
+    glfwSetKeyCallback(display->getWindow(), handleKeyPress);
 
-    // -- calculate field.
-    field->calculateField();
-    //display->drawGraph(field);
-
+    // --  Main work loop.
     while(!display->checkTermination()){
-        /* OpenGL Rendering */
-        display->drawGraph(field);
+        // -- Event based Rendering. 
         display->pollEvents();
     }
     display->exit();
@@ -69,16 +83,70 @@ int main(){
     //cout << "RESULT OF (" << a11<< ") = " << test.evalPostfix(a11) <<endl;
     //cout << "RESULT OF (" << a12<< ") = " << test.evalPostfix(a12) <<endl;
 
+    delete field;
+    delete camera;
+    delete display;
+    delete mathObj;
+
     return 1;
 };
 
 
-// -- Yucky fuction location.
+
+
+
+void getUserInput() {
+    dim = mathObj->getDimensionality();
+    mathObj->getInput();
+}
+
+
+void updateGraph() {
+    delete field;
+    field = new Graph(ARROWS, ARROWS, ARROWS, mathObj, (dim == 2));
+    field->calculateField();
+}
+
+
+
+
+
+// -- Yucky functions in main :( .
 static void handleMouseMovement(GLFWwindow* window, double xpos, double ypos){
-    camera->sphereRotation(prevX - xpos, prevY - ypos);
+    if (DRAGGING) {
+        camera->sphereRotation(prevX - xpos, prevY - ypos);
+        display->drawGraph(field);
+    }
     prevX = xpos;
     prevY = ypos;
 }
 
+static void handleMouseClick(GLFWwindow* window, int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        DRAGGING = true;
+    }
+    else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+        DRAGGING = false;
+    }
+}
+
+static void handleKeyPress(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    if (key == GLFW_KEY_UP && action == GLFW_PRESS) { 
+        if (ARROWS < 15) { ARROWS++; }
+        updateGraph();
+        display->drawGraph(field);
+    }
+    else if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+        if (ARROWS > 2) { ARROWS--; }
+        updateGraph();
+        display->drawGraph(field);
+    }
+    else if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
+        getUserInput();
+        updateGraph();
+        display->drawGraph(field);
+    }
+
+}
 
 

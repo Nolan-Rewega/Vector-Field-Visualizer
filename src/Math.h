@@ -29,9 +29,12 @@ public:
     /* the dictionary of valid operators */
     map<string, vector<int>> operators;
     
+    int dimensions;
+
     /* Methods */
     Math();
     void getInput();
+    int getDimensionality();
     double* parseToPostFix(double x, double y, double z);
 
     string shunting(string eq);

@@ -7,17 +7,20 @@ Arrow::Arrow(glm::vec3 vector, GLfloat w, GLfloat h, GLfloat l){
 	magnitude = sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
 
 	// -- calculate color based on magnitude
-	if (magnitude < 5) {
-		blue = magnitude / 5.0f;
+	if (magnitude < 3) {
+		red = magnitude / 3.0f;
+		green = magnitude / 3.0f;
+		blue = 0.0f;
 	}
-	else if (magnitude < 20) {
-		blue = magnitude / 5.0f;
-		red = magnitude / 20.0f;
+	else if (magnitude < 10) {
+		green = magnitude / 10.0f;
+		blue = 0.0f;
+		red = 0.0f;
 	}
 	else {
-		blue = magnitude / 5.0f;
-		red = magnitude / 20.0f;
-		green = magnitude / 50.0f;
+		blue = 0.0f;
+		red = magnitude / 50.0f;
+		green = 0.0f;
 	}
 
 	// -- calculate rotation angles.

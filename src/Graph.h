@@ -13,7 +13,7 @@ using namespace std;
 class Graph : public Shape{
 public:
     /* Methods */
-    Graph(int rows, int cols, int aisles, Math* mathobj);
+    Graph(int rows, int cols, int aisles, Math* mathobj, bool is2D);
     ~Graph();
 
     vector<Arrow*> getArrows();

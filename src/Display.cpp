@@ -71,7 +71,7 @@ void Display::drawGraph(Graph* graph) {
 	glEnableVertexAttribArray(1);
 
 	// -- matrix operations
-    glm::mat4 projectionMat4 = glm::perspective(glm::radians(90.0f), 800.0f / 600.0f, 0.1f, 10.0f);
+    glm::mat4 projectionMat4 = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.1f, 15.0f);
 	glm::mat4 transform = projectionMat4 * camera->getWorldToViewMatrix() * graph->getTranslationMatrix();
 
 	GLint transformMat4Loc = glGetUniformLocation(program, "transformMat4");
@@ -79,6 +79,7 @@ void Display::drawGraph(Graph* graph) {
 
 	glUseProgram(program);
 	glBindVertexArray(VAO);
+	glLineWidth(2.0f);
 	glDrawElements(GL_LINES, 24, GL_UNSIGNED_SHORT, graph->getDataIndices());
 
 	glDeleteVertexArrays(1, &VAO);
@@ -114,7 +115,7 @@ void Display::drawArrow(Arrow* arrow) {
 
 
 	// -- matrix operations
-	glm::mat4 projectionMat4 = glm::perspective(glm::radians(90.0f), 800.0f / 600.0f, 0.1f, 10.0f);
+	glm::mat4 projectionMat4 = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.1f, 15.0f);
 	glm::mat4 transform = projectionMat4 * camera->getWorldToViewMatrix() * arrow->getTranslationMatrix() * arrow->getRotationMatrix();
 
 	GLint transformMat4Loc = glGetUniformLocation(program, "transformMat4");

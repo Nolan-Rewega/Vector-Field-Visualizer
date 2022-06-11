@@ -28,20 +28,43 @@ Math::Math(){
 }
 
 
+int Math::getDimensionality() {
+    string inputD;
 
+    cout << "Enter the dimensionality of the vector field (2 or 3):  ";
+    getline(cin, inputD);
+    try { dimensions = stoi(inputD); }
+    catch (...) {
+        cout << "Error: input is not an integer.";
+        exit(-42);
+    }
 
-void Math::getInput(){
+    if (dimensions != 2 && dimensions != 3) {
+        cout << "input is neither 2 nor 3.";
+        exit(-84);
+    }
+
+    return dimensions;
+}
+
+void Math::getInput() {
     // -- get user input, this should be done seperatly
-    string input;
-    cout << "Enter a equation or EoF (CTRL + D)" << endl; 
-    cout << "e.g: ( 3 * x + y ^ 2 )" << endl;
-    for(int i = 0; i < 3; i++){
-        cout << "Enter Equations " << i+1 << ". \n";
-        getline(cin, input);
-        if(input.size() > 0){
-            equations.push_back(input);
+    string inputEQ;
+
+    equations.clear();
+
+    cout << "Enter " << dimensions << " equations" << endl; 
+    cout << "equations e.g: ( 3 * x + y ^ 2 ) " << endl;
+    for(int i = 0; i < dimensions; i++){
+        cout << "Enter vector component " << i+1 << ". \n";
+        getline(cin, inputEQ);
+        if(inputEQ.size() > 0){
+            equations.push_back(inputEQ);
         }
     }
+    cout << endl;
+
+
     swapped.resize(equations.size(), " ");
     resultArray = (double*)calloc(equations.size(), sizeof(double));
 }
@@ -182,7 +205,7 @@ string Math::swapVariablesWithValues(string eq) {
 }
 
 
-// used in evaluation of the postfix expression
+// used in the evaluation of the postfix expression
 double Math::compute(vector<double> args, string op){
 
     if(op == "+"){return args[1] + args[0];}

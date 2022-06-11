@@ -2,8 +2,8 @@
 
 Camera::Camera(GLfloat sensitivity, GLfloat sphereRadius){
 	radius = sphereRadius;
-	theta = glm::radians(90.0f);
-	phi = glm::radians(90.0f);
+	theta = glm::radians(0.01f);
+	phi = glm::radians(0.01f);
 
 	// -- origin of the camera sphere
 	origin = glm::vec3(0.0, -3.0, 0.0f);
@@ -14,6 +14,8 @@ Camera::Camera(GLfloat sensitivity, GLfloat sphereRadius){
 	upVector = glm::vec3(0.0f, 0.0f, 1.0f);
 
 	SENSE = sensitivity;
+
+	updateParameters();
 }
 
 glm::mat4 Camera::getWorldToViewMatrix(){
@@ -23,7 +25,6 @@ glm::mat4 Camera::getWorldToViewMatrix(){
 void Camera::sphereRotation(GLfloat dTheta, GLfloat dPhi) {
 	theta += dTheta * SENSE; 
 	phi += dPhi * SENSE;
-	phi = roundf(phi * 100.0f) / 100.0f;
 	updateParameters();
 }
  
