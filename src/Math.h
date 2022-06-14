@@ -12,13 +12,12 @@
 using namespace std;
 /*
     TODO: 
-        1.  split this into files, parse, compute, getEquations,
+        1.  split class into seperate parser, lexer, evaluator,
 */
 
 class Math{
 public:
     vector<string> equations;
-    vector<string> swapped;
     double* resultArray;
 
     map<string, double> variables;
@@ -46,4 +45,4 @@ private:
     double compute(vector<double> args, string op);
     bool isNumber(string token);
 };
-#endif
+#endif //! MATH_H

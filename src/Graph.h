@@ -2,11 +2,14 @@
 #define GRAPH_H
 
 #include <iostream>
+#include <string>
 #include <vector>
+
 
 #include"Math.h"
 #include"Arrow.h"
 #include"Shape.h"
+#include"TextLabel.h"
 
 using namespace std;
 
@@ -17,6 +20,7 @@ public:
     ~Graph();
 
     vector<Arrow*> getArrows();
+    vector<TextLabel*> getText();
     
     void translateReferenceFrame(glm::vec3 delta);
     void updateGraph();
@@ -35,6 +39,7 @@ private:
     GLfloat discretization_x, discretization_y, discretization_z;
 
     std::vector<Arrow*> arrow_data;
+    std::vector<TextLabel*> text;
 
     // -- store vector data
     GLfloat* field_data;
@@ -45,6 +50,7 @@ private:
     Math* solver;
 
     void fillBorderData();
+    void fillTextLabels();
     void initFieldData();
 };
 #endif //!GRAPH_H

@@ -2,8 +2,8 @@
 
 Camera::Camera(GLfloat sensitivity, GLfloat sphereRadius){
 	radius = sphereRadius;
-	theta = glm::radians(0.01f);
-	phi = glm::radians(0.01f);
+	theta = glm::radians(180.0f);
+	phi = glm::radians(-90.0f);
 
 	// -- origin of the camera sphere
 	origin = glm::vec3(0.0, -3.0, 0.0f);
@@ -11,7 +11,7 @@ Camera::Camera(GLfloat sensitivity, GLfloat sphereRadius){
 
 	eyePosition = glm::vec3(0.0f, 0.0f, 0.0f);
 	viewDirection = glm::vec3(0.0f, -1.0f, 0.0f);
-	upVector = glm::vec3(0.0f, 0.0f, 1.0f);
+	upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	SENSE = sensitivity;
 
@@ -23,8 +23,10 @@ glm::mat4 Camera::getWorldToViewMatrix(){
 }
 
 void Camera::sphereRotation(GLfloat dTheta, GLfloat dPhi) {
-	theta += dTheta * SENSE; 
-	phi += dPhi * SENSE;
+	theta += dTheta * SENSE;
+	if (phi - dPhi < -0.00001 && phi - dPhi > -3.14159) {
+		phi -= dPhi * SENSE;
+	}
 	updateParameters();
 }
  
@@ -36,9 +38,9 @@ void Camera::zoom(GLfloat dZoom){
 
 void Camera::updateParameters(){
 	eyePosition = glm::vec3(
-		radius * glm::sin(phi) * glm::cos(theta),
 		radius * glm::sin(phi) * glm::sin(theta),
-		radius * glm::cos(phi)
+		radius * glm::cos(phi),
+		radius * glm::sin(phi) * glm::cos(theta)
 	) + origin;
 
 	// -- view direction is the normal vector of sphere surface

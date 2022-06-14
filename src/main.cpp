@@ -121,7 +121,7 @@ static void handleMouseMovement(GLFWwindow* window, double xpos, double ypos){
         display->drawGraph(field);
     }
     if (currState == XYTRANSLATE) {
-        field->translateReferenceFrame(glm::vec3(deltaY, deltaX, 0.0f));
+        field->translateReferenceFrame(glm::vec3(deltaX, -deltaY, 0.0f));
         display->drawGraph(field);
     }
     if (currState == ZTRANSLATE) {

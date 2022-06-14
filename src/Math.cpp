@@ -3,10 +3,10 @@
 Math::Math(){
     /* legal variables */
     variables = {
-        {"x", 3}, {"y", 2}, {"z", 1}, {"w", 0}
+        {"x", 3}, {"y", 2}, {"z", 1}
     };
     
-    /* vector list of common math functions. */
+    /* dictionary of common math functions. */
     functions = {
         {"sin",     1},     {"cos",     1},     {"tan",     1}, 
         {"asin",    1},     {"acos",    1},     {"atan",    1},
@@ -20,7 +20,7 @@ Math::Math(){
     mult = {2, 1};  div = {2, 1}; 
     power= {3, 0};
 
-    /* the dictionary of valid operators */
+    /* dictionary of valid operators */
     operators = {
         {"+", plus},    {"-", minus},   {"*", mult},
         {"/", div},     {"^", power}
@@ -43,7 +43,7 @@ int Math::getDimensionality() {
         cout << "input is neither 2 nor 3.";
         exit(-84);
     }
-
+    cout << endl;
     return dimensions;
 }
 
@@ -53,36 +53,44 @@ void Math::getInput() {
 
     equations.clear();
 
-    cout << "Enter " << dimensions << " equations" << endl; 
-    cout << "equations e.g: ( 3 * x + y ^ 2 ) " << endl;
+    if (dimensions == 3) {
+        cout << "Enter " << dimensions << " vector equations which represent the field: F (x, y, z)" << endl;
+        cout << "A example set of equation could be:" << endl;
+        cout << "\t sin x " << endl;
+        cout << "\t sin y " << endl;
+        cout << "\t sin z " << endl;
+    }
+    else {
+        cout << "Enter " << dimensions << " vector equations which represent the field: F (x, y)" << endl;
+        cout << "A example set of equation could be:" << endl;
+        cout << "\t ( x ^ 2 - y ^ 2 ) - 4 " << endl;
+        cout << "\t 2 * x * y " << endl;
+    }
     for(int i = 0; i < dimensions; i++){
-        cout << "Enter vector component " << i+1 << ". \n";
+        cout << "Enter the " << (char)(120 + i) << " Vector component. \n";
         getline(cin, inputEQ);
         if(inputEQ.size() > 0){
-            equations.push_back(inputEQ);
+            /* run dijkstras shunnting yard algorithm on input. */
+            equations.push_back( shunting(inputEQ) );
         }
     }
     cout << endl;
 
-
-    swapped.resize(equations.size(), " ");
-    resultArray = (double*)calloc(equations.size(), sizeof(double));
+    resultArray = (double*)calloc(dimensions, sizeof(double));
 }
    
+
+
    
 double* Math::parseToPostFix(double x, double y, double z){
     setVarValues(x, y, z);
     for(unsigned long e = 0; e < equations.size(); e++){
-        /*
-            run dijkstras shunnting yard algorithm on equation e.
-            replace current equation with the postfix version
-        */
-        swapped[e] = swapVariablesWithValues(equations[e]);
-        swapped[e] = shunting(swapped[e]);
-        resultArray[e] = evalPostfix(swapped[e]);
+        resultArray[e] = evalPostfix( swapVariablesWithValues(equations[e]) );
     }
     return resultArray;
 }
+
+
 
 string Math::shunting(string eq){
     
@@ -92,14 +100,24 @@ string Math::shunting(string eq){
     size_t idx = 0;
     
     while( (idx = eq.find(delim)) != std::string::npos){
-        // get each individual component
+        // -- Get each individual syntactic element and remove it from the string.
         token = eq.substr(0, idx);
         eq.erase(0, idx + delim.length());
         
-        if (isNumber(token)) {output.push(token);}
+        // -- If the current syntactic element (token) is a number or a variable
+        // -- then push it onto the output stack.
+        if (isNumber(token) || variables.find(token) != variables.end()) {
+            output.push(token);
+        }
+
+        // -- If the current syntactic element is a function push it on the
+        // -- operator stack.
         else if (functions.find(token) != functions.end()){
             op_stack.push(token);
         }
+
+        // -- If the current syntactic element is a (binary) operator
+        // -- then push it on the operator stack.
         else if (operators.find(token) != operators.end()){
             if (!op_stack.empty()){
                 string top = op_stack.top();
@@ -113,13 +131,21 @@ string Math::shunting(string eq){
             }
             op_stack.push(token);
         }
-        else if (token == "(") {op_stack.push(token);}
+
+        else if (token == "(") {
+            op_stack.push(token);
+        }
+
         else if (token == ")"){
             while(op_stack.top() != "(" && !op_stack.empty()){
                 output.push(op_stack.top());
                 op_stack.pop();
             }
-            if (op_stack.top() == "(") {op_stack.pop();}
+
+            if (op_stack.top() == "(") {
+                op_stack.pop();
+            }
+
             if (!op_stack.empty()){
                 if (functions.find(op_stack.top()) != functions.end()){
                     output.push(op_stack.top());
@@ -128,7 +154,8 @@ string Math::shunting(string eq){
             }
         }
     }
-        
+    
+    // -- Push remaining operators / functions onto the output stack
     while (! op_stack.empty()){
         string top = op_stack.top();
         op_stack.pop();
@@ -136,7 +163,7 @@ string Math::shunting(string eq){
         else { output.push(top); }
     }
     
-    // create the postfix String
+    // -- Create the postfix String.
     string postfix;
     while(!output.empty()) { 
         postfix = postfix + output.front() + " ";
@@ -147,7 +174,6 @@ string Math::shunting(string eq){
         
 
 double Math::evalPostfix(string eq){
-    //cout << eq << endl;
     stack<double> num_stack;
     vector<double> args;
     string delim = " ";
@@ -185,7 +211,6 @@ double Math::evalPostfix(string eq){
 string Math::swapVariablesWithValues(string eq) {
     string copy = eq; string delim = " "; string token;
     size_t idx = 0; size_t pos = 0;
-    //cout << "START: " << eq << endl;
 
     while ((idx = eq.find(delim)) != std::string::npos) {
         // get each individual component
@@ -200,12 +225,11 @@ string Math::swapVariablesWithValues(string eq) {
             pos = copy.find(token, pos + substitute.size());
         }
     }
-    //cout << "SWAPPED: " << copy << endl;
     return copy;
 }
 
 
-// used in the evaluation of the postfix expression
+// -- Psudo function environment of all implemented math operations and functions.
 double Math::compute(vector<double> args, string op){
 
     if(op == "+"){return args[1] + args[0];}

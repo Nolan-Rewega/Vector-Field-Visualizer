@@ -6,8 +6,13 @@ Arrow::Arrow(glm::vec3 vector, GLfloat w, GLfloat h, GLfloat l){
 	length = l;
 	magnitude = sqrt(vector.x * vector.x + vector.y * vector.y + vector.z * vector.z);
 
-	// -- calculate color based on magnitude
-	if (magnitude < 3) {
+	// -- Calculate color based on magnitude.
+	if (magnitude < 1) {
+		red = magnitude;
+		green = magnitude;
+		blue = magnitude;
+	}
+	else if (magnitude < 3) {
 		red = magnitude / 3.0f;
 		green = magnitude / 3.0f;
 		blue = 0.0f;
@@ -23,7 +28,7 @@ Arrow::Arrow(glm::vec3 vector, GLfloat w, GLfloat h, GLfloat l){
 		green = 0.0f;
 	}
 
-	// -- calculate rotation angles.
+	// -- Calculate rotation angles.
 	theta = atan(vector.x / vector.y);
 
 	phi = atan(vector.z / vector.y);
@@ -66,13 +71,13 @@ Arrow::~Arrow(){
 
 void Arrow::fillVertexData(){
 	// -- Arrow sizes
-	GLfloat quarterW = width / 4.0f;
-	GLfloat eighthW = width / 8.0f;
+	GLfloat quarterW = width / 6.0f;
+	GLfloat eighthW = width / 15.0f;
 
-	GLfloat halfH = height / 2.0f;
-	GLfloat eighthH = height / 8.0f;
+	GLfloat halfH = height / 3.0f;
+	GLfloat eighthH = height / 9.0f;
 
-	GLfloat eighthL = length / 8.0f;
+	GLfloat eighthL = length / 12.0f;
 
 	// -- fill in color.
 	for (int i = 3; i < 13.0 * 6.0; i += 6) {
