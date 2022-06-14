@@ -1,3 +1,4 @@
+
 # Vector-Field-Visualizer-
 
 A program that graphically visualizes 2D and 3D vector fields.
@@ -11,9 +12,12 @@ Compatible only with Windows OS only.
 
 ### Controls
 Left click + drag: Moves the camera around the field.
+
 Shift + Left click + drag: Translates the X and Y coordinates.
+
 Ctrl + Left Click + vertical drag: Translates the Z coordinates.
-Up-Arrow and Down-Arrow: Increase and Decrease vector density respectivly.
+
+Up-Arrow and Down-Arrow: Increase and Decrease vector density respectively.
 Spacebar: To enter a new field.
 
 ## Notes:
