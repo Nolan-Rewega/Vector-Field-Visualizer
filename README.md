@@ -26,4 +26,4 @@ example: ( ( 3.1415 * x ) ^ 2 ) - y * ( 2 * sin x ) .
 
 
 ## Demo
-TODO
+[Demo video!](https://www.youtube.com/watch?v=kc_Eosg45Ag)
