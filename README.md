@@ -3,6 +3,9 @@
 
 A program that graphically visualizes 2D and 3D vector fields.
 
+## Demo
+[Demo video!](https://www.youtube.com/watch?v=kc_Eosg45Ag)
+
 ## Getting Started
 ### Dependencies
 Compatible with Windows OS only.
@@ -25,6 +28,3 @@ Spacebar: To enter a new field.
 Equations must be space delimited, meaning there must be a space after each character in the equation.  
 example equation: ( ( 3.1415 * x ) ^ 2 ) - y * ( 2 * sin x ) 
 
-
-## Demo
-[Demo video!](https://www.youtube.com/watch?v=kc_Eosg45Ag)
